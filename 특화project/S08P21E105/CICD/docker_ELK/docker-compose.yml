@@ -1,0 +1,95 @@
+version: '3.2'
+services:
+
+  # 개발 엘라스틱서치
+  elasticsearch:
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    restart: unless-stopped
+    volumes:
+      # Config
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      # Data
+      - type: bind
+        source: $ELASTIC_SEARCH_DEV_DIR/data
+        target: /usr/share/elasticsearch/data
+        read_only: false
+    ports:
+      - "$ELASTIC_SEARCH_PORT_9200:9200"
+      - "$ELASTIC_SEARCH_PORT_9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: $ELASTIC_PWD
+      # Use single node discovery in order to disable production mode and avoid bootstrap checks
+      # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
+      discovery.type: single-node
+    networks:
+      - br_app
+      - br_log
+      - br_elk
+
+  # logstash
+  logstash:
+    build:
+      context: logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    restart: unless-stopped
+    volumes:
+      # System Config
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      # Pipeline Config
+      - type: bind
+        source: ./logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    ports:
+      - "$LOGSTASH_PORT_5044:5044"
+      - "$LOGSTASH_PORT_5000:5000/tcp"
+      - "$LOGSTASH_PORT_5000:5000/udp"
+      - "$LOGSTASH_PORT_9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - br_app
+      - br_log
+      - br_elk
+    depends_on:
+      - elasticsearch
+
+  # kibana
+  kibana:
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+    ports:
+      - "$KIBANA_PORT_5601:5601"
+    networks:
+      - br_app
+      - br_log
+      - br_elk
+    depends_on:
+      - elasticsearch
+
+networks:
+  br_app:
+    external: true
+  br_elk:
+    external: false
+  br_log:
+    external: true

@@ -1,0 +1,27 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /api
+
+spring:
+  profiles:
+    active:
+      - dev
+      - secret
+
+  jpa:
+    properties:
+      hibernate.format_sql: true
+
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB

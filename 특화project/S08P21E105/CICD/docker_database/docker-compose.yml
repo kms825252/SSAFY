@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  # 개발 데이터베이스
+  mariadb_dev:
+    image: mariadb:$MARIADB_VERSION
+    container_name: mariadb_dev
+    restart: unless-stopped
+    ports:
+      - '$MARIADB_DEV_PORT:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: $MARIADB_ROOT_PWD
+    volumes:
+      # Config
+      - type: bind
+        source: ./mariadb/config/my.cnf
+        target: /etc/mysql/my.cnf
+        read_only: true
+      # Data
+      - type: bind
+        source: $MARIADB_DEV_DIR/data
+        target: /var/lib/mysql
+        read_only: false
+    networks:
+      - br_app
+      - br_log
+  
+  mariadb_prod:
+    image: mariadb:$MARIADB_VERSION
+    container_name: mariadb_prod
+    restart: unless-stopped
+    ports:
+      - '$MARIADB_PROD_PORT:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: $MARIADB_ROOT_PWD
+    volumes:
+      # Config
+      - type: bind
+        source: ./mariadb/config/my.cnf
+        target: /etc/mysql/my.cnf
+        read_only: true
+      # Data
+      - type: bind
+        source: $MARIADB_PROD_DIR/data
+        target: /var/lib/mysql
+        read_only: false
+    networks:
+      - br_app
+      - br_log
+
+networks:
+  br_app:
+    external: true
+  br_log:
+    external: true

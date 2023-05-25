@@ -1,0 +1,44 @@
+
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    property:
+      prefix: ENC(
+      suffix: )
+
+
+spring:
+#  config:
+#    activate:
+#      on-profile: dev
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ENC(et9ctHQkIQt6airWEph33/xrMlS8gAsocRbwMF3yMevRSljWFqheOOmMCfWKLZsSV6jxUn01P20=)
+    username: ENC(G22W491zKDGs1IgM9y2Y9w==)
+    password: ENC(zl9T67mI1G61eH0KeKZWgeLD9XF8HW22)
+  jpa:
+    database: mysql
+    #    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate.ddl-auto: update
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ENC(vUzdxxQaj8a21jlJj4DCnNt2mTOyqzpv7C7yyKS0ZcO2HR54CnQ73q4/TXvACM2vZMDvb3l7p1lQUXYlOauSH30slwHVKllcWYpjjVEOcvVaD12Qb8c2MQ==)
+            client-secret: ENC(Wv5CgfLQaOFsIe+OMBR4w6ftFGqDQFrc3VrK096ZsjoQF5s2nV0IMwuUnDrFBVo1)
+            scope:
+              - email
+              - profile
+  jwt:
+    secret: ENC(sxRsIghznUT52dlCA+eYZKN/2XyzRDSq)
+
+gpu:
+  server:
+    url: ENC(tOx07aa4U4Iw/J46u0EbC0nwgIAT1ELh6zvbgB0F2o9gLnfHsbsruXybjP8+Q87g2Ye/TKFSOYB15ve6EBGTBmW1dPlKoPanjSt/MsMu4dHrJM6k93EhEQ==)
